@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import * as yup from 'yup'
+import { useDispatch, useSelector } from 'react-redux';
+import * as yup from 'yup';
 import { Container, Typography, TextField, Button, Grid } from '@mui/material';
+import { fetchLogin } from '../store/reducers/authentications/authThunk';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-
-  const handleLogin = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state.authentication.auth)
+console.log('auth', auth)
+  useEffect(() => {
+    console.log('auth1', auth)
+    if(auth.token){
+      navigate('/')
+    }
+  }, [auth])
+  
+  const handleLogin = (payload) => {
+    dispatch(fetchLogin(payload))
+    
     // Handle login logic here (e.g., authentication, API calls, etc.)
     // console.log(`Logging in with username: ${username} and password: ${password}`);
   };
 
   const formik = useFormik({
     initialValues: {
-      email: '',
+      username: '',
       password: ''
     },
     validationSchema: yup.object({
-        email: yup
+        username: yup
           .string()
-          .email('Email is Invalid')
+          //.email('Email is Invalid')
+          .min(4, 'invalid user name')
           .required('This Field is Required')
           .max(254, 'Max email char 254 allowed'),
         password: yup
@@ -27,7 +43,8 @@ const LoginPage = () => {
           .required('This Field is Required'),
       }),
     onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
+      // alert(JSON.stringify(values, null, 2));
+      handleLogin(values)
     },
   });
 
@@ -35,11 +52,11 @@ const LoginPage = () => {
     handleSubmit,
     handleChange,
     values: {
-       email,
+       username,
        password 
     },
     errors: {
-        email: err_email,
+        username: err_username,
         password : err_password
     },
 
@@ -47,7 +64,7 @@ const LoginPage = () => {
 
   return (
     <Container maxWidth="xs">
-      <form onSubmit={handleSubmit} style={{ marginTop: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <form onSubmit={handleSubmit} style={{ marginTop: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography variant="h4" gutterBottom>
           Login
         </Typography>
@@ -56,13 +73,13 @@ const LoginPage = () => {
           variant="outlined"
           margin="normal"
           fullWidth
-          name='email'
-          value={email}
+          name='username'
+          value={username}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
           sx={{ width: '450px' }}
-          helperText={err_email}
-          error={!!err_email}
+          helperText={err_username}
+          error={!!err_username}
         />
         <TextField
           label="Password"
@@ -82,6 +99,10 @@ const LoginPage = () => {
           Login
         </Button>
       </form>
+      <div>
+      username: 'emilys',
+      password: 'emilyspass',
+      </div>
     </Container>
   );
 };

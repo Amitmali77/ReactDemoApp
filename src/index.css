@@ -66,3 +66,15 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.my-table {
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+
+.my-table th,
+.my-table td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
